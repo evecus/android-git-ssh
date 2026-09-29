@@ -108,14 +108,14 @@ class GitService(
             ensureRemote(git)
             val branch = git.repository.branch ?: settings.defaultBranch
             val spec = RefSpec("refs/heads/$branch:refs/heads/$branch")
-            val cmd = git.push()
+            git.push()
                 .setRemote("origin")
                 .setRefSpecs(spec)
                 .setForce(force)
                 .setTransportConfigCallback { t ->
                     if (t is SshTransport) t.sshSessionFactory = sshFactory()
                 }
-            cmd.call()
+                .call()
         }
     }
 
@@ -172,12 +172,10 @@ class GitService(
     }
 
     private fun sshFactory(): SshdSessionFactory {
-        return object : SshdSessionFactory() {
+        val factory = object : SshdSessionFactory() {
             override fun getSshDirectory(): File = keys.keyDir
-            override fun getDefaultKeys(sshDir: File?): List<File> =
-                listOf(keys.privateKeyFile).filter { it.exists() }
-        }.also {
-            it.homeDirectory = context.filesDir
         }
+        factory.homeDirectory = context.filesDir
+        return factory
     }
 }

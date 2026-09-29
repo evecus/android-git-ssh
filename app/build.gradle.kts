@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.0.1"
         ndk {
             abiFilters += listOf("arm64-v8a")
         }
@@ -48,9 +48,14 @@ android {
                 "META-INF/NOTICE",
                 "META-INF/NOTICE.txt",
                 "META-INF/*.kotlin_module",
+                "META-INF/INDEX.LIST",
             )
         }
     }
+}
+
+configurations.configureEach {
+    exclude(group = "org.apache.sshd", module = "sshd-core")
 }
 
 dependencies {
@@ -65,12 +70,12 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.navigation:navigation-compose:2.8.4")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r")
     implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.apache:6.10.0.202406032230-r")
-    implementation("org.apache.sshd:sshd-core:2.13.2")
     implementation("org.slf4j:slf4j-android:1.7.36")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")

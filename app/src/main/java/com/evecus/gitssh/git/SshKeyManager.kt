@@ -25,13 +25,10 @@ class SshKeyManager(
         if (publicKeyFile.exists()) publicKeyFile.readText() else ""
 
     fun generateEd25519() {
-        val kpg = KeyPairGenerator.getInstance("Ed25519")
         val pair: KeyPair = try {
-            kpg.generateKeyPair()
+            KeyPairGenerator.getInstance("Ed25519").generateKeyPair()
         } catch (_: Exception) {
-            val rsa = KeyPairGenerator.getInstance("RSA")
-            rsa.initialize(4096)
-            rsa.generateKeyPair()
+            KeyPairGenerator.getInstance("RSA").apply { initialize(4096) }.generateKeyPair()
         }
         writeOpenSsh(pair)
     }
@@ -52,8 +49,7 @@ class SshKeyManager(
         val privOut = ByteArrayOutputStream()
         val pubOut = ByteArrayOutputStream()
         val writer = OpenSSHKeyPairResourceWriter.INSTANCE
-        val pass = settings.sshPassphrase.takeIf { it.isNotBlank() }?.toCharArray()
-        writer.writePrivateKey(pair, comment, pass, privOut)
+        writer.writePrivateKey(pair, comment, null, privOut)
         writer.writePublicKey(pair, comment, pubOut)
         privateKeyFile.writeBytes(privOut.toByteArray())
         publicKeyFile.writeBytes(pubOut.toByteArray())

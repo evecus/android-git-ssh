@@ -44,7 +44,7 @@ fun TerminalScreen(modifier: Modifier, state: UiState, vm: AppViewModel) {
             value = input,
             onValueChange = { input = it },
             modifier = Modifier.fillMaxWidth().padding(8.dp),
-            label = { Text("command") },
+            label = { Text("输入命令后回车") },
             singleLine = true,
             enabled = !state.busy,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

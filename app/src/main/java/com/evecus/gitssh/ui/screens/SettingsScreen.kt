@@ -33,32 +33,41 @@ fun SettingsScreen(modifier: Modifier, state: UiState, vm: AppViewModel) {
     var importPriv by remember { mutableStateOf("") }
     var importPub by remember { mutableStateOf("") }
     Column(
-        modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+        modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text("GitHub / Git", style = MaterialTheme.typography.titleLarge)
-        OutlinedTextField(state.gitUserName, vm::setName, label = { Text("user.name") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(state.gitEmail, vm::setEmail, label = { Text("user.email") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(state.githubUser, vm::setGhUser, label = { Text("GitHub user") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(state.remoteUrl, vm::setRemote, label = { Text("SSH remote") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(state.defaultBranch, vm::setBranch, label = { Text("default branch") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(state.sshPassphrase, vm::setPass, label = { Text("key passphrase") }, modifier = Modifier.fillMaxWidth())
-        Text(if (state.hasKey) "key ok  ${state.fingerprint}" else "no key")
+        Text("GitHub / Git 身份", style = MaterialTheme.typography.titleLarge)
+        OutlinedTextField(state.gitUserName, vm::setName, label = { Text("姓名 user.name") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(state.gitEmail, vm::setEmail, label = { Text("邮箱 user.email") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(state.githubUser, vm::setGhUser, label = { Text("GitHub 用户名") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            state.remoteUrl,
+            vm::setRemote,
+            label = { Text("SSH 远程  git@github.com:用户/仓库.git") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedTextField(state.defaultBranch, vm::setBranch, label = { Text("默认分支") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(state.sshPassphrase, vm::setPass, label = { Text("私钥口令（可空）") }, modifier = Modifier.fillMaxWidth())
+        Text("SSH 密钥", style = MaterialTheme.typography.titleMedium)
+        Text(if (state.hasKey) "已有密钥  ${state.fingerprint}" else "尚未生成密钥")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = vm::generateKey, enabled = !state.busy) { Text("Generate Ed25519") }
-            OutlinedButton(onClick = {
-                val cm = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                cm.setPrimaryClip(ClipData.newPlainText("ssh pub", state.publicKey))
-            }, enabled = state.publicKey.isNotBlank()) { Text("Copy pub") }
+            Button(onClick = vm::generateKey, enabled = !state.busy) { Text("生成 Ed25519") }
+            OutlinedButton(
+                onClick = {
+                    val cm = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    cm.setPrimaryClip(ClipData.newPlainText("ssh pub", state.publicKey))
+                },
+                enabled = state.publicKey.isNotBlank(),
+            ) { Text("复制公钥") }
         }
-        if (state.publicKey.isNotBlank()) Text(state.publicKey, style = MaterialTheme.typography.bodySmall)
-        OutlinedTextField(importPriv, { importPriv = it }, label = { Text("paste private PEM") }, modifier = Modifier.fillMaxWidth(), minLines = 3)
-        OutlinedButton(onClick = { vm.importPrivate(importPriv) }, enabled = importPriv.isNotBlank()) { Text("Import private") }
-        OutlinedTextField(importPub, { importPub = it }, label = { Text("paste public key") }, modifier = Modifier.fillMaxWidth())
-        OutlinedButton(onClick = { vm.importPublic(importPub) }, enabled = importPub.isNotBlank()) { Text("Import public") }
+        if (state.publicKey.isNotBlank()) {
+            Text(state.publicKey, style = MaterialTheme.typography.bodySmall)
+            Text("把公钥贴到 GitHub → Settings → SSH and GPG keys")
+        }
+        OutlinedTextField(importPriv, { importPriv = it }, label = { Text("粘贴私钥 PEM 导入") }, modifier = Modifier.fillMaxWidth(), minLines = 3)
+        OutlinedButton(onClick = { vm.importPrivate(importPriv) }, enabled = importPriv.isNotBlank()) { Text("导入私钥") }
+        OutlinedTextField(importPub, { importPub = it }, label = { Text("粘贴公钥导入") }, modifier = Modifier.fillMaxWidth())
+        OutlinedButton(onClick = { vm.importPublic(importPub) }, enabled = importPub.isNotBlank()) { Text("导入公钥") }
         if (state.message.isNotBlank()) Text(state.message)
     }
 }

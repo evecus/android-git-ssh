@@ -25,25 +25,26 @@ fun RepoScreen(modifier: Modifier, state: UiState, vm: AppViewModel, onPickFolde
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text("Repo root", style = MaterialTheme.typography.titleLarge)
-        OutlinedTextField(state.repoPath, vm::setRepoPath, label = { Text("path") }, modifier = Modifier.fillMaxWidth())
+        Text("代码根目录", style = MaterialTheme.typography.titleLarge)
+        OutlinedTextField(state.repoPath, vm::setRepoPath, label = { Text("仓库路径") }, modifier = Modifier.fillMaxWidth())
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = onPickFolder) { Text("Pick folder") }
-            OutlinedButton(onClick = vm::useAppRepo) { Text("App dir") }
-            OutlinedButton(onClick = vm::useDownloads) { Text("Downloads") }
+            OutlinedButton(onClick = onPickFolder) { Text("选择文件夹") }
+            OutlinedButton(onClick = vm::useAppRepo) { Text("应用目录") }
+            OutlinedButton(onClick = vm::useDownloads) { Text("下载目录") }
         }
+        Text("私用建议开启「所有文件访问」，否则 JGit 可能写不了任意路径。", style = MaterialTheme.typography.bodySmall)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = vm::initRepo, enabled = !state.busy) { Text("git init") }
-            Button(onClick = vm::cloneRepo, enabled = !state.busy) { Text("clone") }
-            OutlinedButton(onClick = vm::refreshStatus) { Text("refresh") }
+            Button(onClick = vm::initRepo, enabled = !state.busy) { Text("初始化仓库") }
+            Button(onClick = vm::cloneRepo, enabled = !state.busy) { Text("克隆远程") }
+            OutlinedButton(onClick = vm::refreshStatus) { Text("刷新") }
         }
         state.status?.let { s ->
-            Text("branch ${s.branch}")
+            Text("当前分支：${s.branch}")
             Text(s.path, style = MaterialTheme.typography.bodySmall)
-            Text("dirty=${s.dirty} modified=${s.modified} untracked=${s.untracked}")
-            Text(s.lastCommit)
+            Text("有改动=${s.dirty}  已修改=${s.modified}  未跟踪=${s.untracked}")
+            Text("最新提交：${s.lastCommit}")
         }
-        Text("log", style = MaterialTheme.typography.titleMedium)
+        Text("最近提交", style = MaterialTheme.typography.titleMedium)
         state.log.forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
         if (state.message.isNotBlank()) Text(state.message)
     }

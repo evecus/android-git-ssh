@@ -29,23 +29,39 @@ fun UploadScreen(modifier: Modifier, state: UiState, vm: AppViewModel) {
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Push", style = MaterialTheme.typography.titleLarge)
-        Text("remote: ${state.remoteUrl.ifBlank { "(none)" }}")
-        Text("local: ${state.repoPath}")
-        OutlinedTextField(state.commitMessage, vm::setMsg, label = { Text("commit message") }, modifier = Modifier.fillMaxWidth())
-        Button(onClick = vm::commit, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) { Text("add + commit") }
-        Button(onClick = vm::pushSafe, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) { Text("push") }
-        Button(onClick = vm::pull, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) { Text("pull --rebase") }
+        Text("上传 / 推送", style = MaterialTheme.typography.titleLarge)
+        Text("远程：${state.remoteUrl.ifBlank { "（未配置）" }}")
+        Text("本地：${state.repoPath}")
+        OutlinedTextField(state.commitMessage, vm::setMsg, label = { Text("提交说明") }, modifier = Modifier.fillMaxWidth())
+        Button(onClick = vm::commit, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) {
+            Text("暂存全部并提交")
+        }
+        Button(onClick = vm::pushSafe, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) {
+            Text("增量推送")
+        }
+        Button(onClick = vm::pull, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) {
+            Text("先拉取再推（rebase）")
+        }
         FilledTonalButton(
             onClick = {
-                if (confirmForce) { vm.forcePush(); confirmForce = false } else confirmForce = true
+                if (confirmForce) {
+                    vm.forcePush()
+                    confirmForce = false
+                } else confirmForce = true
             },
             enabled = !state.busy,
             modifier = Modifier.fillMaxWidth(),
-        ) { Text(if (confirmForce) "tap again to force push" else "force push") }
-        FilledTonalButton(onClick = vm::resetHard, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) {
-            Text("reset --hard")
+        ) {
+            Text(if (confirmForce) "再点一次确认覆盖远程" else "覆盖远程（force push）")
         }
-        if (state.busy) Text("busy ${state.message}") else if (state.message.isNotBlank()) Text(state.message)
+        FilledTonalButton(onClick = vm::resetHard, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) {
+            Text("本地硬重置 reset --hard")
+        }
+        if (state.busy) Text("进行中… ${state.message}")
+        else if (state.message.isNotBlank()) Text(state.message)
+        Text(
+            "force push 会覆盖远程当前分支，只用于你自己的小仓库。",
+            style = MaterialTheme.typography.bodySmall,
+        )
     }
 }

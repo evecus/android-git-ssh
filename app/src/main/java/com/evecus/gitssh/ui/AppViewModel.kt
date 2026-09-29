@@ -24,10 +24,10 @@ data class UiState(
     val publicKey: String = "",
     val fingerprint: String = "",
     val hasKey: Boolean = false,
-    val commitMessage: String = "update from android",
+    val commitMessage: String = "手机端更新",
     val status: RepoStatus? = null,
     val log: List<String> = emptyList(),
-    val terminalLines: List<String> = listOf("Git SSH shell. git via JGit, other cmds via /system/bin/sh"),
+    val terminalLines: List<String> = listOf("Git 终端：git 走 JGit，其它命令走 /system/bin/sh"),
     val busy: Boolean = false,
     val message: String = "",
 )
@@ -82,31 +82,31 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         setRepoPath(p.absolutePath)
     }
 
-    fun generateKey() = work("generating key") {
+    fun generateKey() = work("正在生成密钥") {
         c.sshKeys.generateEd25519()
-        "key generated"
+        "密钥已生成"
     }
 
-    fun importPrivate(pem: String) = work("import key") {
+    fun importPrivate(pem: String) = work("导入私钥") {
         c.sshKeys.importPrivateKey(pem)
-        "private key imported"
+        "私钥已导入"
     }
 
-    fun importPublic(pub: String) = work("import pub") {
+    fun importPublic(pub: String) = work("导入公钥") {
         c.sshKeys.importPublicKey(pub)
-        "public key imported"
+        "公钥已导入"
     }
 
-    fun initRepo() = work("init") { c.git.initLocal(); "repo initialized" }
-    fun cloneRepo() = work("clone") { c.git.cloneRemote(); "cloned" }
-    fun commit() = work("commit") {
+    fun initRepo() = work("初始化") { c.git.initLocal(); "仓库已初始化" }
+    fun cloneRepo() = work("克隆") { c.git.cloneRemote(); "克隆完成" }
+    fun commit() = work("提交") {
         c.git.addAllCommit(_state.value.commitMessage)
-        "committed"
+        "已提交"
     }
-    fun pushSafe() = work("push") { c.git.push(false); "pushed" }
-    fun forcePush() = work("force push") { c.git.push(true); "force-pushed" }
-    fun pull() = work("pull") { c.git.pullRebase(); "pulled" }
-    fun resetHard() = work("reset") { c.git.resetHard(); "reset --hard" }
+    fun pushSafe() = work("推送") { c.git.push(false); "推送完成" }
+    fun forcePush() = work("强制推送") { c.git.push(true); "已强制推送" }
+    fun pull() = work("拉取") { c.git.pullRebase(); "拉取完成" }
+    fun resetHard() = work("重置") { c.git.resetHard(); "本地已硬重置" }
 
     fun runShell(line: String) {
         _state.update { it.copy(terminalLines = it.terminalLines + (c.shell.prompt() + line), busy = true) }

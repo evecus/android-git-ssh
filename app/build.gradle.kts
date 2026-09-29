@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0.1"
+        versionName = "1.0.2"
         ndk {
             abiFilters += listOf("arm64-v8a")
         }
@@ -49,6 +49,15 @@ android {
                 "META-INF/NOTICE.txt",
                 "META-INF/*.kotlin_module",
                 "META-INF/INDEX.LIST",
+                "META-INF/eclipse.inf",
+                "about.html",
+                "plugin.properties",
+                "plugin.xml",
+            )
+            pickFirsts += setOf(
+                "OSGI-INF/l10n/plugin.properties",
+                "OSGI-INF/**",
+                "META-INF/services/**",
             )
         }
     }
